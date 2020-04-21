@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Launcher.LoginPage"
+             BackgroundImageSource="Assets/background.png">
+    <ContentPage.Content>
+        <Grid>
+            <BoxView Color="#333333"
+                     CornerRadius="10"
+                     WidthRequest="700"
+                     HeightRequest="516"
+                     VerticalOptions="Center"
+                     HorizontalOptions="Center" />
+
+            <Image Source="Assets/SSHCity.png"
+                   HeightRequest="200"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"
+                   TranslationY="-260" />
+
+            <Entry
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                HeightRequest="40" WidthRequest="450" TranslationY="-100"
+                BackgroundColor="#191919"
+                Placeholder="Nom d'utilisateur ou email" PlaceholderColor="White"
+                TextColor="White"/>
+            
+            <Entry
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                HeightRequest="40" WidthRequest="450"
+                BackgroundColor="#191919"
+                Placeholder="Mot de passe" PlaceholderColor="White"
+                TextColor="White"/>
+
+            <Button
+                Text="SE CONNECTER"
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                BackgroundColor="#EB5757"
+                TranslationY="450"
+                Scale="3" />
+            <Label
+                VerticalOptions="Center"
+                HorizontalOptions="Center"
+                TranslationY="240"
+                TranslationX="270">
+                Version 0.0.1-test
+            </Label>
+
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
