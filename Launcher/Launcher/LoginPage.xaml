@@ -20,28 +20,37 @@
                    TranslationY="-260" />
 
             <Entry
+                x:Name="UsernameEntry"
                 VerticalOptions="Center"
                 HorizontalOptions="Center"
                 HeightRequest="40" WidthRequest="450" TranslationY="-100"
                 BackgroundColor="#191919"
                 Placeholder="Nom d'utilisateur ou email" PlaceholderColor="White"
+                TextChanged="OnTextChanged"
                 TextColor="White"/>
             
             <Entry
+                x:Name="PasswordEntry"
+                IsPassword="true"
                 VerticalOptions="Center"
                 HorizontalOptions="Center"
                 HeightRequest="40" WidthRequest="450"
                 BackgroundColor="#191919"
                 Placeholder="Mot de passe" PlaceholderColor="White"
+                TextChanged="OnTextChanged"
                 TextColor="White"/>
 
             <Button
+                x:Name="LoginButton"
+                IsEnabled="False"
                 Text="SE CONNECTER"
                 VerticalOptions="Center"
                 HorizontalOptions="Center"
                 BackgroundColor="#EB5757"
                 TranslationY="450"
-                Scale="3" />
+                Scale="3"
+                Clicked="OnClicked"
+                />
             <Label
                 VerticalOptions="Center"
                 HorizontalOptions="Center"
