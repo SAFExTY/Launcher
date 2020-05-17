@@ -21,24 +21,23 @@ namespace Launcher
         private static readonly Color DefaultColor = Color.White;
         private static readonly Color SuccessColor = Color.Green;
         private static readonly Color ErrorColor = Color.Red;
-        private HttpClient client;
+        private readonly HttpClient _client;
 
         public LoginPage()
         {
             InitializeComponent();
+            
             //specify to use TLS 1.2 as default connection
-            System.Net.ServicePointManager.SecurityProtocol =
+            ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) =>
+            var clientHandler = new HttpClientHandler
             {
-                return true;
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
             };
-            client = new HttpClient(clientHandler);
-            client.BaseAddress = new Uri(Url);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _client = new HttpClient(clientHandler) {BaseAddress = new Uri(Url)};
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
         private async void OnClicked(object sender, EventArgs e)
@@ -48,7 +47,7 @@ namespace Launcher
             var content = new StringContent(
                 JsonConvert.SerializeObject(AuthModel.Of(UsernameEntry.Text, PasswordEntry.Text)),
                 Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("users/authenticate", content);
+            var response = await _client.PostAsync("users/authenticate", content);
 
             if (response.IsSuccessStatusCode)
             {
