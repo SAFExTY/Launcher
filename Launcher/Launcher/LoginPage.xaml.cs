@@ -6,10 +6,12 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using AuthServer.Models;
 using Launcher.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Launcher
@@ -26,7 +28,7 @@ namespace Launcher
         public LoginPage()
         {
             InitializeComponent();
-            
+
             //specify to use TLS 1.2 as default connection
             ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -43,7 +45,6 @@ namespace Launcher
         private async void OnClicked(object sender, EventArgs e)
         {
             DisableEntries();
-
             var content = new StringContent(
                 JsonConvert.SerializeObject(AuthModel.Of(UsernameEntry.Text, PasswordEntry.Text)),
                 Encoding.UTF8, "application/json");
@@ -54,6 +55,21 @@ namespace Launcher
                 var str = await response.Content.ReadAsStringAsync();
                 var authenticatedModel = JsonConvert.DeserializeObject<AuthenticatedModel>(str);
                 MarkAsSucceeded();
+                LoginButton.Text = "Chargement";
+                // Add Header
+                _client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", authenticatedModel.Token);
+                response = await _client.GetAsync($"games/{authenticatedModel.GameId}");
+                if (response.IsSuccessStatusCode)
+                {
+                    // Find a save
+                    str = await response.Content.ReadAsStringAsync();    
+                }
+                else
+                {
+                    // No save
+                }
+                
             }
             else
             {
