@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,7 +21,7 @@ namespace Launcher
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
-        private const string Url = "https://localhost:5001/";
+        private const string Url = "https://sshcity.vinetos.fr:5001/";
         private static readonly Color DefaultColor = Color.White;
         private static readonly Color SuccessColor = Color.Green;
         private static readonly Color ErrorColor = Color.Red;
@@ -50,35 +52,33 @@ namespace Launcher
                 Encoding.UTF8, "application/json");
             var response = await _client.PostAsync("users/authenticate", content);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var str = await response.Content.ReadAsStringAsync();
-                var authenticatedModel = JsonConvert.DeserializeObject<AuthenticatedModel>(str);
-                MarkAsSucceeded();
-                LoginButton.Text = "Chargement";
-                // Add Header
-                _client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", authenticatedModel.Token);
-                response = await _client.GetAsync($"games/{authenticatedModel.GameId}");
-                if (response.IsSuccessStatusCode)
-                {
-                    // Find a save
-                    str = await response.Content.ReadAsStringAsync();    
-                }
-                else
-                {
-                    // No save
-                }
-                
-            }
-            else
+            if (!response.IsSuccessStatusCode)
             {
                 // Handle failure
                 // Wrong username or password
                 MarkAsErrored();
+                EnableEntries();
+                return;
             }
 
-            EnableEntries();
+            var user = await response.Content.ReadAsStringAsync();
+            var authenticatedModel = JsonConvert.DeserializeObject<AuthenticatedModel>(user);
+            MarkAsSucceeded();
+            LoginButton.Text = "Chargement";
+            // Add Header
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", authenticatedModel.Token);
+            response = await _client.GetAsync($"games/{authenticatedModel.GameId}");
+            var gameData = "";
+            if (response.IsSuccessStatusCode)
+                // Save found
+                gameData = await response.Content.ReadAsStringAsync();
+
+
+            var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            Directory.CreateDirectory(appdata); // Create if not exists
+            var exec = Path.Combine(appdata, "SSHCity.exe");
+            Process.Start(exec, $"{user} # {gameData}");
         }
 
         private void OnTextChanged(object sender, TextChangedEventArgs e)
